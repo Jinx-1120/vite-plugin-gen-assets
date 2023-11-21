@@ -1,0 +1,39 @@
+{
+  "name": "vite-plugin-gen-assets",
+  "version": "1.0.0",
+  "description": "vite plugin generate assets",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "homepage": "https://github.com/Jinx-1120/vite-plugin-gen-assets#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Jinx-1120/vite-plugin-gen-assets.git"
+  },
+  "bugs": "https://github.com/Jinx-1120/vite-plugin-gen-assets/issues",
+  "scripts": {
+    "build": "tsup"
+  },
+  "keywords": [
+    "vite",
+    "plugin",
+    "generate",
+    "assets"
+  ],
+  "author": "jinhaidi01@gmail.com",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "devDependencies": {
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.2",
+    "@types/node": "^16.18.63"
+  },
+  "peerDependencies": {
+    "vite": "*"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
