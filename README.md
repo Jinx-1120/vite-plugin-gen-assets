@@ -1,18 +1,18 @@
-# vite-plugin-gen-assets
+# vite-plugin-generate-assets
 
 ## Install
 ```shell
-pnpm add vite-plugin-gen-assets -D
+pnpm add vite-plugin-generate-assets -D
 ```
 
 ## Usage
 ```ts
 // vite.config.js / vite.config.ts
-import ViteGenAssets from 'vite-plugin-gen-assets';
+import ViteGenerateAssets from 'vite-plugin-generate-assets';
 
 export default {
   plugins: [
-    ViteGenAssets()
+    ViteGenerateAssets()
   ]
 }
 ```

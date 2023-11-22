@@ -1,7 +1,6 @@
-import type { Plugin } from "vite";
-import fs from "node:fs";
-import path from "node:path";
-
+import type { Plugin } from 'vite';
+import fs from 'node:fs';
+import path from 'node:path';
 interface IOptions {
   /**
    * Resource matching rules
@@ -19,19 +18,22 @@ interface IOptions {
    */
   outputFilePath?: string;
 }
+
+const rootDir = process.cwd();
+
 function generateAssetsEnum(options: IOptions) {
   const {
     include = /\.(png|jpe?g|gif|webp|svg)$/i,
-    assetsDir = path.resolve(__dirname, "src/assets"),
-    outputFilePath = path.resolve(__dirname, "src/assets/assets.ts"),
+    assetsDir = path.resolve(rootDir, 'src/assets'),
+    outputFilePath = path.resolve(rootDir, 'src/assets/assets.ts'),
   } = options;
 
   function toPascalCaseWithoutSpecialChars(str: string) {
     return str
-      .replace(/\.[^.]+$/, "")
-      .split(/[-_@]/)
+      .replace(/\.[^.]+$/, '')
+      .split(/[-_@\s]/)
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join("");
+      .join('');
   }
 
   function generateAssetsMap(dir: string, nestedPath: string[] = []) {
@@ -47,12 +49,9 @@ function generateAssetsEnum(options: IOptions) {
         const targetObject = nestedPath.reduce((obj, key) => {
           return obj[key] || (obj[key] = {});
         }, assets);
-        targetObject[key] = `/${path.relative(process.cwd(), filePath)}`;
+        targetObject[key] = `/${path.relative(rootDir, filePath)}`;
       } else if (fileInfo.isDirectory()) {
-        Object.assign(
-          assets,
-          generateAssetsMap(filePath, [...nestedPath, file])
-        );
+        Object.assign(assets, generateAssetsMap(filePath, [...nestedPath, file]));
       }
     }
 
@@ -60,21 +59,16 @@ function generateAssetsEnum(options: IOptions) {
   }
   const assets = generateAssetsMap(assetsDir);
 
-  const code = `const Assets = ${JSON.stringify(
-    assets,
-    null,
-    2
-  )};\nexport default Assets;`;
+  const code = `const Assets = ${JSON.stringify(assets, null, 2)};\nexport default Assets;`;
 
   fs.writeFileSync(outputFilePath, code);
 }
 
-function ViteGenAssetsPlugin(options: IOptions): Plugin {
+export default function ViteGenAssetsPlugin(options: IOptions = {}): Plugin {
   return {
-    name: "vite-generate-assets-plugin",
+    name: 'vite-generate-assets-plugin',
     buildStart() {
       generateAssetsEnum(options);
     },
   };
 }
-export default ViteGenAssetsPlugin;
