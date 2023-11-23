@@ -36,9 +36,9 @@ function generateAssetsEnum(options: IOptions) {
       .join('');
   }
 
-  function generateAssetsMap(dir: string, nestedPath: string[] = []) {
+  function generateAssetsMap(dir: string, nestedPath: string = '') {
     const files = fs.readdirSync(dir);
-    const assets: Record<string, any> = {};
+    let assets = '';
 
     for (const file of files) {
       const filePath = path.join(dir, file);
@@ -46,12 +46,11 @@ function generateAssetsEnum(options: IOptions) {
 
       if (fileInfo.isFile() && include.test(file)) {
         const key = toPascalCaseWithoutSpecialChars(file);
-        const targetObject = nestedPath.reduce((obj, key) => {
-          return obj[key] || (obj[key] = {});
-        }, assets);
-        targetObject[key] = `/${path.relative(rootDir, filePath)}`;
+        assets += `${key}: new URL('/${path.relative(rootDir, filePath)}', import.meta.url).href,\n`;
       } else if (fileInfo.isDirectory()) {
-        Object.assign(assets, generateAssetsMap(filePath, [...nestedPath, file]));
+        assets += `${file}: {\n`;
+        assets += generateAssetsMap(filePath, `${nestedPath}${file}.`);
+        assets += `},\n`;
       }
     }
 
@@ -59,7 +58,10 @@ function generateAssetsEnum(options: IOptions) {
   }
   const assets = generateAssetsMap(assetsDir);
 
-  const code = `const Assets = ${JSON.stringify(assets, null, 2)};\nexport default Assets;`;
+  const code = `/* eslint-disable */\n
+  const Assets = {
+    ${assets}
+  };\nexport default Assets;`;
 
   fs.writeFileSync(outputFilePath, code);
 }
